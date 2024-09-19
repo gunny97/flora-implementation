@@ -1,40 +1,39 @@
-# FLoRA와 LoRA 성능 비교 실험
+# Implementation of FLoRA (https://arxiv.org/abs/2312.05677)
 
-## 개요
-이 프로젝트는 Transformer 모델에서 FLoRA(Fast Low Rank Adaptation)와 LoRA(Low Rank Adaptation)의 성능을 비교합니다. 우리는 다양한 모델 크기와 rank에서 모델의 throughput과 latency을 측정하여 두 방법의 효율성을 평가합니다.
+## Overview
+This project compares the performance of FLoRA (Fast Low-Rank Adaptation) and LoRA (Low-Rank Adaptation) in Transformer models. We evaluate the efficiency of both methods by measuring the throughput and latency across various model sizes and ranks.
 
-## 실험 결과 해석
-![실험 결과](results/results.png)
+## Experimental Results Interpretation
+![Experimental Results](results/results.png)
 
-`results/results.png` 파일에 저장된 실험 결과는 FLoRA 논문에서 수행한 throughput과 latency 실험과 유사한 패턴을 보여줍니다.
+The experimental results stored in the `results/results.png` file show a pattern similar to the throughput and latency experiments conducted in the FLoRA paper.
 
-### throughput 분석
-논문과 마찬가지로, 모델 크기(small, medium, large)에 따라 FLoRA의 throughput이 점점 향상되는 모습을 보입니다. Large-size 모델의 경우, throughput이 Medium-size와 Small-size 모델보다 높게 나왔습니다. 또한, 모델 크기와 상관없이 FLoRA를 적용할 때는 rank가 커짐에 따라 throughput이 감소하는 경향을 보입니다. 모델 크기가 고정된 경우, LoRA의 throughput과 FLoRA의 throughput이 겹치는 rank 지점은 모델 크기가 커질수록 점점 더 큰 rank로 이동하는 것을 볼 수 있습니다. 이 패턴은 논문에서의 결과와 동일합니다.
+### Throughput Analysis
+Similar to the paper, the throughput of FLoRA improves as the model size increases (small, medium, large). For large-size models, throughput is higher compared to medium and small models. Additionally, regardless of model size, applying FLoRA shows a trend where throughput decreases as the rank increases. When the model size is fixed, the rank at which the throughput of LoRA and FLoRA overlaps shifts to a higher rank as the model size increases. This pattern is consistent with the results from the paper.
 
-### latency 분석
-논문과 동일한 패턴을 보여줍니다. FLoRA를 적용할 때는 rank가 커짐에 따라 latency이 늘어나는 반면, LoRA를 적용할 때는 거의 일정한 수준의 latency을 유지합니다.
+### Latency Analysis
+As seen in the paper, applying FLoRA results in an increase in latency as the rank increases, while applying LoRA maintains a relatively consistent level of latency.
 
-종합적으로, 구현한 실험에서도 FLoRA는 rank가 작을 때 throughput과 latency이 크게 개선되며, 모델의 크기가 클 때도 throughput이 개선됨을 확인할 수 있습니다. 다만 논문에서는 보다 뚜렷한 결과를 보여주는데, 이는 본 실험에서 진행한 모델의 크기보다 논문에서는 훨씬 더 큰 모델로 실험을 진행했기 때문입니다 (1B, 3B, 15B).
+In conclusion, the experiment implementation confirms that FLoRA significantly improves throughput and latency at smaller ranks, and it improves throughput even in larger models. However, the results in the paper show more pronounced differences, which is likely due to the paper’s use of larger models (1B, 3B, 15B) compared to the models used in this experiment.
 
-## 실험 재현 환경
-다음은 실험을 재현할 수 있는 환경 설정 방법입니다:
+## Experimental Reproduction Environment
+The following describes how to set up the environment to reproduce the experiments:
 
-### 실험 구성
-실험은 세 개의 주요 스크립트로 나뉩니다:
-- `layers.py`: FLoRA와 LoRA 레이어 및 Transformer 디코더 레이어의 정의를 포함합니다.
-- `utils.py`: 랜덤 데이터 생성, throughput 및 latency 측정, 결과 플롯을 위한 유틸리티 함수가 포함되어 있습니다.
-- `main.py`: 실험을 실행하고 모델을 실행하며 결과 플롯을 생성하는 메인 스크립트입니다.
+### Experiment Structure
+The experiments are divided into three main scripts:
+- `layers.py`: Contains the definition of FLoRA, LoRA layers, and the Transformer decoder layers.
+- `utils.py`: Includes utility functions for generating random data, measuring throughput and latency, and plotting results.
+- `main.py`: The main script that runs the experiments, executes the models, and generates the result plots.
 
-### 환경 설정
-1. Python 버전: 3.10
-2. 필요한 패키지:
+### Environment Setup
+1. Python version: 3.10
+2. Required packages:
     - torch==2.3.1
     - tqdm==4.66.4
     - matplotlib==3.9.1
     - numpy==1.26.3
 
-위 패키지를 설치한 후, 터미널에서 다음 명령어를 실행하여 실험을 수행하세요:
-(argparse의 resutl_path만 local path로 지정해주세요.)
+After installing the packages, you can run the experiment with the following command (ensure you specify the `result_path` argument with your local path):
 
 ```bash
 python main.py
